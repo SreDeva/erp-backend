@@ -10,14 +10,6 @@ const Venue = require('../models/venueModel');
 exports.getAllClasses = async (req, res) => {
   try {
     const classes = await Class.find()
-      .populate('students')
-      .populate({
-        path: 'courses.courseId',
-        populate: {
-          path: 'staff venue',
-          select: 'name', // Replace with the fields you want to select
-        },
-      });
 
     res.status(200).json(classes);
   } catch (error) {
@@ -28,18 +20,10 @@ exports.getAllClasses = async (req, res) => {
 
 // Get a class by ID
 exports.getClassById = async (req, res) => {
-  const { id } = req.params;
+  const { className } = req.body;
 
   try {
-    const classObj = await Class.findById(id)
-      .populate('students')
-      .populate({
-        path: 'courses.courseId',
-        populate: {
-          path: 'staff venue',
-          select: 'name', // Replace with the fields you want to select
-        },
-      });
+    const classObj = await Class.findOne({ className })
 
     if (!classObj) {
       return res.status(404).json({ error: 'Class not found' });
@@ -110,3 +94,190 @@ exports.deleteClass = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+// add student to class
+exports.addStudent = async (req,res) => {
+  const { className, roll_no } = req.body;
+
+  try {
+    const classObj = await Class.findOne({ className })
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
+    }
+
+    const student = await Student.findOne({ roll_no })
+    if(!student){
+      return res.status(400).json({ error: "No such Student" })
+    }
+    classObj.students.push(student.roll_no)
+    classObj.save();
+    res.status(200).json(classObj);
+
+  } catch (error) {
+    console.error('Error adding student to class:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+// add student to course
+exports.addCourse = async (req,res) => {
+  const { className, courseCode, staff_id, venueCode } = req.body;
+
+  try {
+    const classObj = await Class.findOne({ className })
+
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
+    }
+
+    const course = await Course.findOne({ courseCode })
+    if(!course){
+      return res.status(400).json({ error: "No such Course" })
+    }
+
+    const staff = await Staff.findOne({ staff_id })
+    if(!staff){
+      return res.status(400).json({ error: "No such Staff" })
+    }
+
+    const venue = await Venue.findOne({ venueCode })
+    if(!venue){
+      return res.status(400).json({ error: "No such Venue" })
+    }
+
+    const newCoures = {
+      courseId: courseCode,
+      staff: staff_id,
+      venue: venueCode,
+    }
+    classObj.courses.push(newCoures)
+    classObj.save();
+    res.status(200).json(classObj);
+
+  } catch (error) {
+    console.error('Error adding Course to class:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+//delete student fron class
+exports.deleteStudent = async (req, res) => {
+  const { className, roll_no } = req.body;
+  try {
+    const classObj = await Class.findOne({ className })
+
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
+    }
+
+    const student = await Student.findOne({ roll_no })
+    if(!student){
+      return res.status(400).json({ error: "No such Sudent" })
+    }
+
+    const index = classObj.students.indexOf(student.roll_no)
+    if(!index){
+      return res.status(400).json({ error: "No such student in class" })
+    }
+    classObj.students.splice(index, 1)
+    classObj.save();
+    res.status(200).json(classObj)
+  } catch (error) {
+    console.error('Error deleting student from class:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+//delete course from class
+exports.deleteCourse = async (req, res) => {
+  const { className, courseId } = req.body;
+  try {
+    const classObj = await Class.findOne({ className })
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
+    }
+
+    const course = await Course.findOne({ courseCode: courseId })
+    if(!course){
+      return res.status(400).json({ error: "No such Course" })
+    }
+
+    const index = classObj.courses.indexOf(courseId)
+    if(!index){
+      return res.status(400).json({ error: "No such student in class" })
+    }
+    classObj.courses.splice(index, 1)
+    classObj.save();
+    res.status(200).json(classObj)
+  } catch (error){
+    console.error('Error deleting Course from class:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+//update staff for course in class
+exports.updateCourseStaff = async (req, res) => {
+  const { className, courseId, staff_id } = req.body;
+  try {
+    const classObj = await Class.findOne({ className })
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
+    }
+
+    const course = await Course.findOne({ courseCode: courseId })
+    if(!course){
+      return res.status(400).json({ error: "No such Course" })
+    }
+
+    const staff = await Staff.findOne({ staff_id })
+    if(!staff){
+      return res.status(400).json({ error: "No such Staff" })
+    }
+
+    const courseIndex = classObj.courses.findIndex(course => course.courseId === courseId);
+    if(courseIndex === -1){
+      return res.status(400).json({ error: "No such Course in class" })
+    }
+    console.log(courseIndex)
+    classObj.courses[courseIndex].staff = [staff_id]
+    await classObj.save();
+    res.status(200).json(classObj)
+  } catch (error) {
+    console.error('Error updating staff of course from class:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+//update venue of the course
+exports.updateCourseVenue = async (req, res) => {
+  const { className, courseId, venue } = req.body;
+  try {
+    const classObj = await Class.findOne({ className })
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
+    }
+
+    const course = await Course.findOne({ courseCode: courseId })
+    if(!course){
+      return res.status(400).json({ error: "No such Course" })
+    }
+
+    const venueCode = await Venue.findOne({ venueCode: venue })
+    if(!venueCode){
+      return res.status(400).json({ error: "No such Venue" })
+    }
+
+    const courseIndex = classObj.courses.findIndex(course => course.courseId === courseId);
+    if(courseIndex === -1){
+      return res.status(400).json({ error: "No such Venue in class" })
+    }
+    classObj.courses[courseIndex].venue=venue;
+    await classObj.save();
+    res.status(200).json(classObj)
+  } catch (error) {
+    console.error('Error updating Venue of course from class:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}

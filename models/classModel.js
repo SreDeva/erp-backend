@@ -17,10 +17,10 @@ const classSchema = new Schema({
   ],
   courses: [
     {
-      courseCodes: {
+      courseId: {
         type: Schema.Types.String,
         ref: 'CourseModel', // Reference to the Course model
-        refPath: 'courses.courseCode'
+        refPath: 'course.courseCode'
       },
       staff: [
         {
