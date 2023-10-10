@@ -6,6 +6,13 @@ const {
     deleteStudent,
     updateStudent 
 } = require('../controllers/studentController');
+// const { 
+//     getCourses,
+// } = require('../controllers/courseController');
+
+const classController = require('../controllers/classController');
+// const venueController = require('../controllers/venueController');
+// const staffController = require('../controllers/staffController');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
@@ -13,18 +20,20 @@ const router = express.Router();
 router.use(requireAuth);
 
 //GET all work out
-router.get('/', getStudents)
+router.get('/student', getStudents)
 
 //get single Student
-router.get('/:id', getStudent)
+router.get('/student/:id', getStudent)
 
 //post a new Student
-router.post('/', createStudent)
+router.post('/student', createStudent)
 
 //delete a new Student
-router.delete('/:id', deleteStudent)
+router.delete('/student/:id', deleteStudent)
 
 //update a new Student
-router.patch('/:id', updateStudent)
+router.patch('/student/:id', updateStudent)
+
+router.get('/class/className', classController.getClassById);
 
 module.exports = router

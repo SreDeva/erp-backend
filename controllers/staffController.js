@@ -11,6 +11,10 @@ exports.getAllStaff = async (req, res) => {
 //get staff by id
 exports.getStaffById = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(400).json({ error: 'No such Staff' });
@@ -28,6 +32,10 @@ exports.getStaffById = async (req, res) => {
 //create staff
 exports.createStaff = async (req, res) => {
     const { name, staff_id } = req.body;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
     let emptyFields = []
     if(!name){
         emptyFields.push('name')
@@ -49,6 +57,10 @@ exports.createStaff = async (req, res) => {
 //delete a staff
 exports.deleteStaff = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ error: 'Invalid staff id' });
     }
@@ -65,6 +77,10 @@ exports.deleteStaff = async (req, res) => {
 //update staff
 exports.updateStaff = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ error: 'No such staff' });

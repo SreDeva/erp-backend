@@ -4,7 +4,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const studentRoutes = require('./routes/student');
 const adminRoutes = require('./routes/admin');
-const adminUserRoutes = require('./routes/adminUser');
 const userRoutes = require('./routes/user');
 //const courseRoutes = require('./routes/course')
 // const classRoutes = require('./routes/classRoute')
@@ -24,7 +23,6 @@ app.use((req, res, next) => {
 // routes
 app.use('/api/student', studentRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/adminUser', adminUserRoutes);
 app.use('/api/user', userRoutes);
 //app.use('/api/course', courseRoutes)
 // app.use('/api/admin/classRoute', classRoutes)

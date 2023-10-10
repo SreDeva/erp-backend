@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 //get all venue
 exports.getAllVenue = async (req, res) => {
     const venue = await venueModel.find().sort({createdAT: -1})
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
     res.status(200).json(venue)
 }
@@ -11,6 +15,11 @@ exports.getAllVenue = async (req, res) => {
 //get venue by id
 exports.getVenueById = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
+
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(400).json({ error: 'No such Venue' });
@@ -28,6 +37,10 @@ exports.getVenueById = async (req, res) => {
 //create venue
 exports.createVenue = async (req, res) => {
     const { venueCode } = req.body;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
     let emptyFields = []
     if(!venueCode){
         emptyFields.push('venueCode')
@@ -46,6 +59,10 @@ exports.createVenue = async (req, res) => {
 //delete a venue
 exports.deleteVenue = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ error: 'Invalid venue id' });
     }
@@ -62,6 +79,10 @@ exports.deleteVenue = async (req, res) => {
 //update venue
 exports.updateVenue = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ error: 'No such venue' });

@@ -84,7 +84,8 @@ const createStudent = async (req, res) => {
         }
 
         // Create the user
-        const user = await User.signup(email, password);
+        const role = 'user'
+        const user = await User.signup(email, password, role);
 
         // Create the student
         const student = await Student.create({

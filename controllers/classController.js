@@ -8,6 +8,10 @@ const Venue = require('../models/venueModel');
 
 // Get all classes
 exports.getAllClasses = async (req, res) => {
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
   try {
     const classes = await Class.find()
 
@@ -39,6 +43,10 @@ exports.getClassById = async (req, res) => {
 // Create a new class
 exports.createClass = async (req, res) => {
   const { className, students, courses } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
 
   try {
     const classObj = await Class.create({
@@ -58,6 +66,10 @@ exports.createClass = async (req, res) => {
 exports.updateClass = async (req, res) => {
   const { id } = req.params;
   const { className, students, courses } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
 
   try {
     const updatedClass = await Class.findByIdAndUpdate(id, {
@@ -80,6 +92,10 @@ exports.updateClass = async (req, res) => {
 // Delete a class by ID
 exports.deleteClass = async (req, res) => {
   const { id } = req.params;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
 
   try {
     const deletedClass = await Class.findByIdAndRemove(id);
@@ -99,6 +115,10 @@ exports.deleteClass = async (req, res) => {
 // add student to class
 exports.addStudent = async (req,res) => {
   const { className, roll_no } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
 
   try {
     const classObj = await Class.findOne({ className })
@@ -124,6 +144,10 @@ exports.addStudent = async (req,res) => {
 // add student to course
 exports.addCourse = async (req,res) => {
   const { className, courseCode, staff_id, venueCode } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
 
   try {
     const classObj = await Class.findOne({ className })
@@ -165,6 +189,10 @@ exports.addCourse = async (req,res) => {
 //delete student fron class
 exports.deleteStudent = async (req, res) => {
   const { className, roll_no } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
   try {
     const classObj = await Class.findOne({ className })
 
@@ -193,6 +221,10 @@ exports.deleteStudent = async (req, res) => {
 //delete course from class
 exports.deleteCourse = async (req, res) => {
   const { className, courseId } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
   try {
     const classObj = await Class.findOne({ className })
     if(!classObj){
@@ -220,6 +252,10 @@ exports.deleteCourse = async (req, res) => {
 //update staff for course in class
 exports.updateCourseStaff = async (req, res) => {
   const { className, courseId, staff_id } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
   try {
     const classObj = await Class.findOne({ className })
     if(!classObj){
@@ -253,6 +289,10 @@ exports.updateCourseStaff = async (req, res) => {
 //update venue of the course
 exports.updateCourseVenue = async (req, res) => {
   const { className, courseId, venue } = req.body;
+  const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
   try {
     const classObj = await Class.findOne({ className })
     if(!classObj){
