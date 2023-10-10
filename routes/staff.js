@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const staffController = require('../controllers/staffController');
+const requireAuth = require('../middleware/requireAuth');
+
+router.use(requireAuth);
 
 // Define staff routes
 router.get('/', staffController.getAllStaff);

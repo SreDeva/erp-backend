@@ -64,23 +64,35 @@ exports.createClass = async (req, res) => {
 
 // Update a class by ID
 exports.updateClass = async (req, res) => {
-  const { id } = req.params;
-  const { className, students, courses } = req.body;
+  const { className, students, courses, classAdvisor, classTutor, newClassName } = req.body;
   const userRole = req.user.role
   if (userRole !== 'admin') {
     return res.status(400).json({ error: "Access denied" })
   }
 
   try {
-    const updatedClass = await Class.findByIdAndUpdate(id, {
-      className,
-      students,
-      courses,
-    });
-
-    if (!updatedClass) {
-      return res.status(404).json({ error: 'Class not found' });
+    const classObj = await Class.findOne({ className })
+    if(!classObj){
+      return res.status(400).json({ error: "No such Class" })
     }
+
+    if(newClassName){
+      classObj.className = newClassName;
+    }
+    if(students){
+    classObj.students = students;
+    }
+    if(courses){
+    classObj.courses = courses;
+    }
+    if(classAdvisor){
+    classObj.classAdvisor = classAdvisor;
+    }
+    if(classTutor){
+    classObj.classTutor = classTutor;
+    }
+
+    const updatedClass = await classObj.save();
 
     res.status(200).json(updatedClass);
   } catch (error) {

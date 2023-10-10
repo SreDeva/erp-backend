@@ -36,6 +36,28 @@ const classSchema = new Schema({
       },
     },
   ],
+  classAdvisor: {
+    staff: [
+      {
+        staff_id: {
+          type: Schema.Types.String,
+          ref: 'StaffModel', // Reference to the Staff model
+          refPath: 'staffs.staff_id'
+        }
+      }
+    ]
+  },
+  classTutor: {
+    staff: [
+      {
+        staff_id: {
+          type: Schema.Types.String,
+          ref: 'StaffModel', // Reference to the Staff model
+          refPath: 'staffs.staff_id'
+        }
+      }
+    ]
+  }
 });
 
 module.exports = mongoose.model('Class', classSchema);

@@ -20,20 +20,19 @@ const router = express.Router();
 router.use(requireAuth);
 
 //GET all work out
-router.get('/student', getStudents)
+router.get('/', getStudents)
 
 //get single Student
-router.get('/student/:id', getStudent)
+router.get('/:id', getStudent)
 
 //post a new Student
-router.post('/student', createStudent)
+router.post('/', createStudent)
 
 //delete a new Student
-router.delete('/student/:id', deleteStudent)
+router.delete('/:id', deleteStudent)
 
 //update a new Student
-router.patch('/student/:id', updateStudent)
+router.patch('/:id', updateStudent)
 
-router.get('/class/className', classController.getClassById);
 
 module.exports = router
