@@ -4,7 +4,8 @@ const {
     getStudent,
     getStudents,
     deleteStudent,
-    updateStudent 
+    updateStudent ,
+    getAdminStudents
 } = require('../controllers/studentController');
 // const { 
 //     getCourses,
@@ -19,8 +20,10 @@ const router = express.Router();
 
 router.use(requireAuth);
 
+router.get('/byuser', getStudents)
+
 //GET all work out
-router.get('/', getStudents)
+router.get('/', getAdminStudents)
 
 //get single Student
 router.get('/:id', getStudent)

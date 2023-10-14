@@ -57,9 +57,28 @@ const studentSchema = new Schema(
       ref: 'User',
       required: true,
     },
+    startDate:{
+      type: Date,
+      default: Date.now,
+      required: true
+    },
+    semester: {
+      type: Number,
+      default: 1
+    },
+    year: {
+      type: Number,
+      default: 1,
+    }
     
   },
   { timestamps: true }
 );
+
+
+
+
+
+
 
 module.exports = mongoose.model('studentModel', studentSchema);

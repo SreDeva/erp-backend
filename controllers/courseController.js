@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 
 // Get all courses
 const getCourses = async (req, res) => {
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
     console.log("hi")
     try {
       const courses = await Course.find();
@@ -20,6 +24,10 @@ const getCourses = async (req, res) => {
 const createCourse = async (req, res) => {
     console.log("h1")
     const { courseName, courseCode } = req.body;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
         // Validate request data
         if (!courseName || !courseCode) {

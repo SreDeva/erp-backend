@@ -4,6 +4,7 @@ const Student = require('../models/studentModel');
 const Course = require('../models/courseModel');
 const Staff = require('../models/staffModel');
 const Venue = require('../models/venueModel');
+const requireAuth = require('../middleware/requireAuth');
 
 // Controller methods for CRUD operations
 

@@ -7,10 +7,13 @@ const mongoose = require('mongoose')
 //get all Student
 const getStudents = async (req, res) => {
     const user = req.user._id; 
-    console.log(user)
 
     try {
         const students = await Student.find({ user }).sort({ createdAt: -1 });
+        for (const student of students) {
+            updateSemesterAndYear(student);
+            await student.save();
+        }
 
         res.status(200).json(students);
     } catch (error) {
@@ -22,8 +25,15 @@ const getStudents = async (req, res) => {
 
 //get admin students
 const getAdminStudents = async (req, res) => {
-
+    const userRole = req.user.role
+  if (userRole !== 'admin') {
+    return res.status(400).json({ error: "Access denied" })
+  }
+    
     const student = await Student.find().sort({createdAT: -1})
+    console.log(student.startDate)
+    updateSemesterAndYear(student)
+    student.save()
 
     res.status(200).json(student)
 }
@@ -52,6 +62,11 @@ const createStudent = async (req, res) => {
 
     const createToken = (_id) => {
         return jwt.sign({_id}, process.env.SECRET, { expiresIn: '3d' })
+    }
+
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
     }
 
     try {
@@ -92,6 +107,10 @@ const createStudent = async (req, res) => {
             name, dob, gender, email, roll_no, reg_no, address, phone_no, batch, degree, Class, user: user._id
         });
 
+        updateSemesterAndYear(student)
+
+        student.save()
+
         // Create a token (assuming createToken function is available)
         const token = createToken(user._id);
 
@@ -106,6 +125,10 @@ const createStudent = async (req, res) => {
 //delete a Student
 const deleteStudent = async (req, res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ error: 'No such Student' });
@@ -125,6 +148,10 @@ const deleteStudent = async (req, res) => {
 //updaate a Student
 const updateStudent = async (req,res) => {
     const { id } = req.params;
+    const userRole = req.user.role
+    if (userRole !== 'admin') {
+        return res.status(400).json({ error: "Access denied" })
+    }
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ error: 'No such Student' });
@@ -141,6 +168,30 @@ const updateStudent = async (req,res) => {
     res.status(200).json(student)
 }
 
+const updateSemesterAndYear = async (students) => {
+    const currentDate = new Date();
+
+    const studentStartDate = students.startDate; 
+    const studentYear = studentStartDate.getFullYear();
+    
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+  
+    if (currentMonth >= 9) {
+        students.year = currentYear - studentYear + 1;
+    } else {
+        students.year = currentYear - studentYear
+    }
+
+    if (currentMonth >= 9 || currentMonth<=2) {
+        students.semester = (2 * students.year)-1
+    } else {
+        students.semester = (2 * students.year)
+    }
+  };
+  
+
 
 module.exports = {
     createStudent,
@@ -148,5 +199,6 @@ module.exports = {
     getStudents,
     deleteStudent,
     updateStudent ,
-    getAdminStudents
+    getAdminStudents,
+    updateSemesterAndYear
 }
